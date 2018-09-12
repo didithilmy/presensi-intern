@@ -10,7 +10,7 @@ require 'vendor/autoload.php';
 
 header("X-Env-Hostname: ".gethostname());
 
-define("DEBUG_DISABLE_AUTH", true);
+define("DEBUG_DISABLE_AUTH", false);
 
 define("BASE_URL", getenv("BASE_URL") ?: "http://localhost/presensi-intern");
 define("SERVER_URL", getenv("SERVER_URL") ?: "https://intern.tec.or.id/restsvc/public");
@@ -25,7 +25,7 @@ $app = new \Slim\App($settings);
 
 // Set up dependencies
 require __DIR__ . '/dependencies.php';
-//require __DIR__ . '/middleware.php';
+require __DIR__ . '/middleware.php';
 
 // Load routes
 $app->group('/api', function(\Slim\App $app) {
