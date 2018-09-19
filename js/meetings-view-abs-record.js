@@ -75,13 +75,58 @@ function getUserDetails() {
         if(msg.is_active != 1) notices.push("<b class='text-danger'>This person is not an active intern.</b>");
 
         if(notices.length == 0) {
-            $("#abs-notices").html("<span class='text-secondary'>No notices.</span>");
+            $("#person-notices").html("<span class='text-secondary'>No notices.</span>");
         } else {
-            $("#abs-notices").html("");
+            $("#person-notices").html("");
             $.each(notices, function(i, val) {
-               $("#abs-notices").append("<div>" + val + "</div>");
+               $("#person-notices").append("<div>" + val + "</div>");
             });
         }
+
+        getAbsenceNotices(MEETING_ID, tec_regno);
+    }).fail(function(jqXHR, textStatus) {
+        alert("Request failed: " + textStatus);
+    });
+}
+
+function getAbsenceNotices(meeting_id, tec_regno) {
+    $("#abs-notices").html('<div align="center" class="text-secondary card-body">Loading...</div>');
+
+    $.ajax({
+        method: "GET",
+        url: BASE_URL+"/api/absence/get/" + meeting_id + "/" + tec_regno,
+        headers: {"Authorization": "Bearer " + Cookies.get("token")}
+    }).done(function(msg) {
+        if(msg.success !== true) {
+            console.log("Failed retrieving absence data");
+            return;
+        }
+
+        if(msg.body.length === 0) {
+            $("#abs-notices").html('<div align="center" class="text-secondary card-body">No recorded absence notice</div>');
+        } else {
+            $("#abs-notices").html('');
+        }
+
+        $.each(msg.body, function(i, val) {
+            var title;
+            switch (parseInt(val.type)) {
+                case 0:
+                    title = "Not attending";
+                    break;
+                case 1:
+                    title = "Coming late at " + moment.unix(val.will_attend).tz("Asia/Jakarta").format("DD/MM/YYYY HH:mm");
+                    break;
+                case 2:
+                    title = "Leaving early at " + moment.unix(val.will_leave).tz("Asia/Jakarta").format("DD/MM/YYYY HH:mm");
+                    break;
+            }
+
+            var urgency = val.urgency == 0 ? 'NRML' : 'SHORT';
+            var content = '<li class="list-group-item d-flex justify-content-between align-items-center">' + title + '<span class="badge badge-primary badge-pill">' + urgency + '</span></li>';
+
+            $("#abs-notices").append(content);
+        });
     }).fail(function(jqXHR, textStatus) {
         alert("Request failed: " + textStatus);
     });

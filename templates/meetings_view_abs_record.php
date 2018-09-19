@@ -57,8 +57,15 @@
                     <h4 style="margin-top: 16px; margin-bottom: 0;" id="name"></h4>
                     <h5 style="margin: 0;" id="tec_regno"></h5>
                 </div>
-                <div class="card-body" id="abs-notices">
+                <div class="card-body" id="person-notices">
 
+                </div>
+            </div>
+            <div class="card e-user" style="margin-top: 16px;">
+                <div class="card-header">Absence notices</div>
+                <div>
+                    <ul class="list-group list-group-flush" id="abs-notices">
+                    </ul>
                 </div>
             </div>
         </div>
